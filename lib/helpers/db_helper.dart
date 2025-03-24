@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/catatan.dart';
+import '../models/user.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 
@@ -26,6 +27,20 @@ class DBHelper {
             kategori TEXT
           )
         ''');
+
+        await db.execute('''
+          CREATE TABLE user(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            password TEXT NOT NULL
+          )
+        ''');
+
+        // Insert default admin user
+        await db.insert('user', {
+          'email': 'admin@example.com',
+          'password': 'admin123',
+        });
       },
     );
   }
@@ -35,6 +50,7 @@ class DBHelper {
     return _db!;
   }
 
+  // CRUD untuk tabel catatan
   static Future<int> insertCatatan(Catatan catatan) async {
     final db = await database;
     return await db.insert('catatan', catatan.toMap());
@@ -88,5 +104,25 @@ class DBHelper {
     final path = directory!.path;
     final file = File('$path/catatan_dosen.csv');
     return await file.writeAsString(csv);
+  }
+
+  // Fitur login
+  static Future<void> insertUser(User user) async {
+    final db = await database;
+    await db.insert('user', user.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  static Future<User?> getUser(String email, String password) async {
+    final db = await database;
+    final result = await db.query(
+      'user',
+      where: 'email = ? AND password = ?',
+      whereArgs: [email, password],
+    );
+
+    if (result.isNotEmpty) {
+      return User.fromMap(result.first);
+    }
+    return null;
   }
 }

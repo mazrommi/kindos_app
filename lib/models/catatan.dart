@@ -19,7 +19,7 @@ class Catatan {
       'judul': judul,
       'deskripsi': deskripsi,
       'tanggal': tanggal,
-      'kategori': kategori, // ✅
+      'kategori': kategori,
     };
   }
 
@@ -29,7 +29,7 @@ class Catatan {
       judul: map['judul'],
       deskripsi: map['deskripsi'],
       tanggal: map['tanggal'],
-      kategori: map['kategori'], // ✅
+      kategori: map['kategori'],
     );
   }
 }

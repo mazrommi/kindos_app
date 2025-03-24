@@ -4,9 +4,18 @@ import 'models/catatan.dart';
 import 'helpers/db_helper.dart';
 import 'pages/catatan_form.dart';
 import 'pages/catatan_detail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'screens/login_screen.dart';
 
-void main() {
-  runApp(const CatatanApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: isLoggedIn ? const CatatanListPage() : LoginScreen(),
+  ));
 }
 
 class CatatanApp extends StatelessWidget {
@@ -32,13 +41,22 @@ class _CatatanListPageState extends State<CatatanListPage> {
   List<Catatan> _catatanList = [];
   List<Catatan> _filteredCatatanList = [];
   final TextEditingController _searchController = TextEditingController();
+  String? userEmail;
 
   @override
   void initState() {
     super.initState();
+    _loadUser();
     _refreshCatatan();
     _searchController.addListener(() {
       _filterCatatan(_searchController.text);
+    });
+  }
+
+  void _loadUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userEmail = prefs.getString('email');
     });
   }
 
@@ -103,12 +121,44 @@ class _CatatanListPageState extends State<CatatanListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CATATAN KINERJA DOSEN'),
+        title: Text('CATATAN KINERJA DOSEN\n${userEmail ?? ""}', textAlign: TextAlign.center),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.download),
             onPressed: _exportData,
+          ),
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              final confirm = await showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: Text('Konfirmasi'),
+                  content: Text('Yakin ingin logout?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text('Batal'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: Text('Logout'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm == true) {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+                if (!mounted) return;
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => LoginScreen()),
+                );
+              }
+            },
           ),
         ],
       ),
