@@ -6,26 +6,37 @@ import 'pages/catatan_form.dart';
 import 'pages/catatan_detail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
+import 'package:provider/provider.dart';
+import 'provider/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: isLoggedIn ? const CatatanListPage() : LoginScreen(),
-  ));
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: MyApp(isLoggedIn: isLoggedIn),
+    ),
+  );
 }
 
-class CatatanApp extends StatelessWidget {
-  const CatatanApp({super.key});
+class MyApp extends StatelessWidget {
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Catatan Kinerja Dosen',
-      home: const CatatanListPage(),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: isLoggedIn ? const CatatanListPage() : const LoginScreen(),
     );
   }
 }
@@ -128,6 +139,16 @@ class _CatatanListPageState extends State<CatatanListPage> {
             icon: const Icon(Icons.download),
             onPressed: _exportData,
           ),
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return Switch(
+                value: themeProvider.isDarkMode,
+                onChanged: (value) {
+                  themeProvider.toggleTheme();
+                },
+              );
+            },
+          ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
@@ -171,7 +192,7 @@ class _CatatanListPageState extends State<CatatanListPage> {
               decoration: InputDecoration(
                 hintText:
                 'Cari Kegiatan, Rincian Kegiatan, kategori, atau tanggal',
-                hintStyle: const TextStyle(fontSize: 14, color: Colors.black),
+                hintStyle: const TextStyle(fontSize: 14, color: Colors.blueAccent),
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
