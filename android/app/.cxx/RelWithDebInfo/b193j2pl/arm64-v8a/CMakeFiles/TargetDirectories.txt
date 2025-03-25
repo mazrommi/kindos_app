@@ -1,0 +1,2 @@
+D:/_Master_flutter/kindos_app/android/app/.cxx/RelWithDebInfo/b193j2pl/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/_Master_flutter/kindos_app/android/app/.cxx/RelWithDebInfo/b193j2pl/arm64-v8a/CMakeFiles/rebuild_cache.dir
