@@ -11,14 +11,15 @@ class CatatanDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tanggalFormat = DateFormat('dd MMM yyyy - HH:mm WIB');
-    final formattedTanggal = tanggalFormat.format(DateTime.parse(catatan.tanggal));
+    final formattedTanggal =
+        tanggalFormat.format(DateTime.parse(catatan.tanggal));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detail Catatan'),
+        title: const Text('Detail Catatan'),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit),
+            icon: const Icon(Icons.edit),
             onPressed: () async {
               final result = await Navigator.push(
                 context,
@@ -38,17 +39,21 @@ class CatatanDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Kegiatan:', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(catatan.judul, style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
-            Text('Rincian Kegiatan:', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(catatan.deskripsi, style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
-            Text('Kategori:', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(catatan.kategori, style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
-            Text('Tanggal & Waktu:', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(formattedTanggal, style: TextStyle(fontSize: 16)),
+            const Text('Kegiatan:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(catatan.judul, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
+            const Text('Rincian Kegiatan:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(catatan.deskripsi, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
+            const Text('Kategori:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(catatan.kategori, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
+            const Text('Tanggal & Waktu:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(formattedTanggal, style: const TextStyle(fontSize: 16)),
           ],
         ),
       ),
